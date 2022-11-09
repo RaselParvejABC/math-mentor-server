@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { mongoClient } = require("../db/mongo-client");
 
+const { mongoClient } = require("../db/mongo-client");
 const servicesCollection = mongoClient.db("math-mentor").collection("services");
 
 router.get("/", async (req, res) => {
