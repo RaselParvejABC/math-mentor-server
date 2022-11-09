@@ -1,12 +1,13 @@
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
 // Requiring/Importing Routers
 const service = require("./routers/service");
 const services = require("./routers/services");
 const review = require("./routers/review");
-const reviews = require("./routers/reviews");
+const user = require("./routers/user");
 
 //Initiating Express
 const app = express();
@@ -15,6 +16,7 @@ const port = 5000;
 //Global Middleware
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 app.get("/", (req, res) => {
   res.send("Math Mentor Server is Running Happily!");
@@ -27,7 +29,7 @@ app.delete("/remove-jwt-token", (req, res) => {});
 app.use("/service", service);
 app.use("/services", services);
 app.use("/review", review);
-app.use("/reviews", reviews);
+app.use("/user", user);
 
 // Start Listening for Request
 app.listen(port, () => {
