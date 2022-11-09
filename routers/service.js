@@ -6,6 +6,17 @@ const { mongoClient } = require("../db/mongo-client");
 const servicesCollection = mongoClient.db("math-mentor").collection("services");
 const reviewsCollection = mongoClient.db("math-mentor").collection("reviews");
 
+router.post("/", async (req, res) => {
+  const newService = req.body;
+
+  try {
+    await servicesCollection.insertOne(newService);
+    res.json({ success: true });
+  } catch (error) {
+    res.json({ success: false });
+  }
+});
+
 router.get("/:id", async (req, res) => {
   const objectID = ObjectId(req.params.id);
   const filter = { _id: objectID };
