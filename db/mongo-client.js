@@ -12,4 +12,4 @@ client.on("connectionCreated", () => {
   console.log("Hello from Mongo!");
 });
 
-module.exports = client;
+module.exports = { mongoClient: client };
