@@ -40,4 +40,15 @@ router.get("/:id/rating", async (req, res) => {
   res.json({ average: avg[0]?.avg_rating ?? null });
 });
 
+router.get("/:id/reviews", async (req, res) => {
+  const objectIDString = req.params.id;
+  const filter = { serviceID: objectIDString };
+
+  const reviews = await reviewsCollection
+    .aggregate([{ $match: filter }])
+    .toArray();
+
+  res.json(reviews);
+});
+
 module.exports = router;
