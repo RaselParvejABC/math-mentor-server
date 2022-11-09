@@ -1,3 +1,4 @@
+const { getUserData } = require("../firebase-admin/firebase-admin");
 const express = require("express");
 const router = express.Router();
 
@@ -48,7 +49,14 @@ router.get("/:id/reviews", async (req, res) => {
     .aggregate([{ $match: filter }])
     .toArray();
 
-  res.json(reviews);
+  const reviewsWithUserData = await Promise.all(
+    reviews.map(async (review) => {
+      const data = await getUserData(review.userID);
+      return { ...review, ...data };
+    })
+  );
+
+  res.json(reviewsWithUserData);
 });
 
 module.exports = router;
