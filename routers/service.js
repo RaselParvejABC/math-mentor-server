@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 
 const { ObjectId } = require("mongodb");
-const { mongoClient } = require("../db/mongo-client");
+const { getMongoClient } = require("../db/mongo-client");
+const mongoClient = getMongoClient();
 const servicesCollection = mongoClient.db("math-mentor").collection("services");
 const reviewsCollection = mongoClient.db("math-mentor").collection("reviews");
 

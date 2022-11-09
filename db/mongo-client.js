@@ -8,8 +8,9 @@ const client = new MongoClient(uri, {
   serverApi: ServerApiVersion.v1,
 });
 
-client.on("connectionCreated", () => {
-  console.log("Hello from Mongo!");
-});
+ 
 
-module.exports = { mongoClient: client };
+const getMongoClient = () => {
+  return client;
+};
+module.exports = { getMongoClient };
