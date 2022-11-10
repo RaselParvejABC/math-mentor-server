@@ -44,9 +44,13 @@ router.patch("/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
-    await reviewsCollection.updateOne({ _id: ObjectId(id) }, req.body);
+    await reviewsCollection.updateOne(
+      { _id: ObjectId(id) },
+      { $set: req.body }
+    );
     res.json({ success: true, edited: true });
   } catch (error) {
+    console.log(error);
     res.json({ success: false });
   }
 });

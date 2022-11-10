@@ -11,13 +11,13 @@ const getUserData = async (uid) => {
   try {
     const userRecord = await getAuth().getUser(uid);
     return {
-      displayName: userRecord.displayName,
-      photoURL: userRecord.photoURL,
+      displayName: userRecord.displayName ?? "Name Not Found",
+      photoURL: userRecord.photoURL ?? "https://i.ibb.co/64B2d1Q/not-found.png",
     };
   } catch (error) {
     return {
-      displayName: null,
-      photoURL: null,
+      displayName: "Name not Found",
+      photoURL: "https://i.ibb.co/64B2d1Q/not-found.png",
     };
   }
 };
