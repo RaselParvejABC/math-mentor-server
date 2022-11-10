@@ -23,18 +23,18 @@ router.delete("/:id", async (req, res) => {
 
   try {
     await reviewsCollection.deleteOne({ _id: ObjectId(id) });
-    res.json({ success: true });
+    res.json({ success: true, deleted: true });
   } catch (error) {
     res.json({ success: false });
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.patch("/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
     await reviewsCollection.updateOne({ _id: ObjectId(id) }, req.body);
-    res.json({ success: true });
+    res.json({ success: true, edited: true });
   } catch (error) {
     res.json({ success: false });
   }

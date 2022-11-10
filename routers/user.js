@@ -59,7 +59,6 @@ router.get("/my-reviews", checkJWTToken, async (req, res) => {
     })
   );
 
-  console.log(resultArray);
   res.json(resultArray);
 });
 
