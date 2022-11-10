@@ -19,8 +19,8 @@ app.use(
   cors({
     origin: [
       process.env.NODE_ENV !== "production" && "http://localhost:3000",
-      "https://math-mentor-737ff.web.app/",
-      "https://math-mentor-737ff.firebaseapp.com/",
+      "https://math-mentor-737ff.web.app",
+      "https://math-mentor-737ff.firebaseapp.com",
     ],
     credentials: true,
   })
