@@ -21,7 +21,6 @@ router.get("/token/:uid", (req, res) => {
 
 const checkJWTToken = (req, res, next) => {
   const token = req.cookies.token;
-  console.log("token", token);
   if (!token) {
     res.sendStatus(400);
   }
@@ -32,7 +31,6 @@ const checkJWTToken = (req, res, next) => {
     res.sendStatus(401);
   }
   if (decodedToken?.userID) {
-    console.log("middleware passed");
     req.userID = decodedToken.userID;
     next();
   } else {
@@ -41,28 +39,27 @@ const checkJWTToken = (req, res, next) => {
 };
 
 router.get("/my-reviews", checkJWTToken, async (req, res) => {
-  const resultArray = reviewsCollection
+  let resultArray = await reviewsCollection
     .aggregate([
       {
         $match: {
-          _id: ObjectId(req.userID),
-        },
-      },
-      {
-        $addFields: {
-          serviceObjectId: { $toObjectId: "$serviceID" },
-        },
-      },
-      {
-        $lookup: {
-          from: "reviews",
-          localField: "serviceObjectID",
-          foreignField: "_id",
-          as: "service",
+          userID: req.userID,
         },
       },
     ])
     .toArray();
+
+  resultArray = await Promise.all(
+    resultArray.map(async (review) => {
+      const serviceObjectID = ObjectId(review.serviceID);
+      const filter = { _id: serviceObjectID };
+      const service = await servicesCollection.findOne(filter);
+
+      return { ...review, serviceTitle: service["title"] };
+    })
+  );
+
+  console.log(resultArray);
   res.json(resultArray);
 });
 
