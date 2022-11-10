@@ -46,7 +46,7 @@ router.get("/:id/reviews", async (req, res) => {
   const filter = { serviceID: objectIDString };
 
   const reviews = await reviewsCollection
-    .aggregate([{ $match: filter }])
+    .aggregate([{ $match: filter }, { $sort: { timestamp: -1 } }])
     .toArray();
 
   const reviewsWithUserData = await Promise.all(

@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken");
-import { serialize } from "cookie";
 const express = require("express");
 const router = express.Router();
 
@@ -13,29 +12,42 @@ router.get("/token/:uid", (req, res) => {
   const uid = req.params.uid;
   const payload = { userID: uid, timestamp: new Date().getTime() };
   const token = jwt.sign(payload, process.env.JWT_SECRET);
-  const tokenCookie = serialize("token", token, {
+  res.cookie("token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    path: "/",
+    maxAge: 86_400_000,
   });
-  res.setHeader("Set-Cookie", tokenCookie);
   res.json({ success: true });
 });
 
 const checkJWTToken = (req, res, next) => {
   const token = req.cookies.token;
-  const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+  console.log("token", token);
+  if (!token) {
+    res.sendStatus(400);
+  }
+  let decodedToken;
+  try {
+    decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+  } catch (err) {
+    res.sendStatus(401);
+  }
   if (decodedToken?.userID) {
+    console.log("middleware passed");
+    req.userID = decodedToken.userID;
     next();
   } else {
-    res.status(400).json({ message: "Invalid JWT Token" });
+    res.sendStatus(401);
   }
 };
 
 router.get("/my-reviews", checkJWTToken, async (req, res) => {
   const resultArray = reviewsCollection
     .aggregate([
+      {
+        $match: {
+          _id: ObjectId(req.userID),
+        },
+      },
       {
         $addFields: {
           serviceObjectId: { $toObjectId: "$serviceID" },
@@ -52,6 +64,14 @@ router.get("/my-reviews", checkJWTToken, async (req, res) => {
     ])
     .toArray();
   res.json(resultArray);
+});
+
+router.delete("/sign-out", (req, res) => {
+  res.cookie("token", null, {
+    httpOnly: true,
+    maxAge: 86_400_000,
+  });
+  res.json({ success: true });
 });
 
 module.exports = router;

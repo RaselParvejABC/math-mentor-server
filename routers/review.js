@@ -8,6 +8,7 @@ const reviewsCollection = mongoClient.db("math-mentor").collection("reviews");
 
 router.post("/", async (req, res) => {
   const newReview = req.body;
+  newReview.timestamp = new Date().getTime();
 
   try {
     await reviewsCollection.insertOne(newReview);
