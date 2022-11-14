@@ -13,8 +13,10 @@ router.get("/token/:uid", (req, res) => {
   const payload = { userID: uid, timestamp: new Date().getTime() };
   const token = jwt.sign(payload, process.env.JWT_SECRET);
   res.cookie("token", token, {
+    secure: process.env.NODE_ENV === "production",
     httpOnly: true,
     maxAge: 86_400_000,
+    sameSite: "none",
   });
   res.json({ success: true });
 });
@@ -23,12 +25,14 @@ const checkJWTToken = (req, res, next) => {
   const token = req.cookies.token;
   if (!token) {
     res.sendStatus(400);
+    return;
   }
   let decodedToken;
   try {
     decodedToken = jwt.verify(token, process.env.JWT_SECRET);
   } catch (err) {
     res.sendStatus(401);
+    return;
   }
   if (decodedToken?.userID) {
     req.userID = decodedToken.userID;
